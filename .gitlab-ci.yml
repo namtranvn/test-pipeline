@@ -1,0 +1,129 @@
+stages:   
+  - build
+  - push
+  - deploy
+
+build_image1:
+  stage: build
+  tags: 
+    - ubuntu-stc-03
+  before_script:
+    - docker login -u -p
+    - touch gitlab-test.txt
+  script:
+    - docker build . --file Dockerfile1 --tag ros2-gui:$CI_PIPELINE_IID
+    - echo "$CI_PIPELINE_IID $CI_PIPELINE_ID Build Docker Image1" >> gitlab-test.txt
+  artifacts:
+    name: "$CI_PIPELINE_IID"
+    paths:
+      -  gitlab-test.txt
+    expire_in: 1 week
+
+build_image2:
+  stage: build
+  tags: 
+    - ubuntu-stc-03
+  before_script:
+    - docker login -u -p
+    - touch gitlab-test.txt
+  script:
+    - docker build . --file Dockerfile2 --tag ros2-gui:$CI_PIPELINE_IID
+    - echo "$CI_PIPELINE_IID $CI_PIPELINE_ID Build Docker Image2" >> gitlab-test.txt
+  artifacts:
+    name: "$CI_PIPELINE_IID"
+    paths:
+      -  gitlab-test.txt
+    expire_in: 1 week
+
+build_image3:
+  stage: build
+  tags: 
+    - ubuntu-stc-03
+  needs:
+    - build_image2
+  before_script:
+    - docker login -u -p
+    - touch gitlab-test.txt
+  script:
+    - docker build . --file Dockerfile3 --tag ros2-gui:$CI_PIPELINE_IID
+    - echo "$CI_PIPELINE_IID $CI_PIPELINE_ID Build Docker Image3" >> gitlab-test.txt
+  artifacts:
+    name: "$CI_PIPELINE_IID"
+    paths:
+      -  gitlab-test.txt
+    expire_in: 1 week
+
+push_image1:
+  stage: push
+  tags:
+    - ubuntu-stc-03
+  script:
+    - docker tag ros2-gui:$CI_PIPELINE_IID hoainamtran204/ros2-gui:$CI_PIPELINE_IID
+    - docker push hoainamtran204/ros2-gui:$CI_PIPELINE_IID
+    - echo "$CI_PIPELINE_IID $CI_PIPELINE_ID Push Docker Image" >> gitlab-test.txt
+  artifacts:
+    name: "$CI_PIPELINE_IID"
+    paths:
+      -  gitlab-test.txt
+    expire_in: 1 week
+
+push_image2:
+  stage: push
+  tags:
+    - ubuntu-stc-03
+  script:
+    - docker tag ros2-gui:$CI_PIPELINE_IID hoainamtran204/ros2-gui:$CI_PIPELINE_IID
+    - docker push hoainamtran204/ros2-gui:$CI_PIPELINE_IID
+    - echo "$CI_PIPELINE_IID $CI_PIPELINE_ID Push Docker Image" >> gitlab-test.txt
+  artifacts:
+    name: "$CI_PIPELINE_IID"
+    paths:
+      -  gitlab-test.txt
+    expire_in: 1 week
+
+push_image3:
+  stage: push
+  tags:
+    - ubuntu-stc-03
+  needs:
+    - push_image2
+  script:
+    - docker tag ros2-gui:$CI_PIPELINE_IID hoainamtran204/ros2-gui:$CI_PIPELINE_IID
+    - docker push hoainamtran204/ros2-gui:$CI_PIPELINE_IID
+    - echo "$CI_PIPELINE_IID $CI_PIPELINE_ID Push Docker Image" >> gitlab-test.txt
+  artifacts:
+    name: "$CI_PIPELINE_IID"
+    paths:
+      -  gitlab-test.txt
+    expire_in: 1 week
+
+deploy_job:
+  stage: deploy
+  tags: 
+    - ubuntu-stc-03
+  script:
+    - docker pull hoainamtran204/ros2-gui:$CI_PIPELINE_IID
+    - docker run -d -it hoainamtran204/ros2-gui:$CI_PIPELINE_IID /bin/bash
+    - echo "$CI_PIPELINE_IID $CI_PIPELINE_ID Deploy Docker Image" >> gitlab-test.txt
+  artifacts:
+    name: "$CI_PIPELINE_IID"
+    paths:
+      -  gitlab-test.txt
+    expire_in: 1 week
+
+# run_job:
+#   stage: deploy
+#   tags: 
+#     - ubuntu-stc-03
+#   needs:
+#     - deploy_job
+#   script:
+      # - docker exec -d ros2-gazebo-tugbot bash -c 'source /opt/ros/humble/setup.bash; ign gazebo tugbot_depot.sdf'
+      # - docker exec -d ros2-gazebo-tugbot bash -c 'source /opt/ros/humble/setup.bash; ros2 run ros_ign_bridge parameter_bridge /model/tugbot/cmd_vel@geometry_msgs/msg/Twist@ignition.msgs.Twist'
+      # - docker exec -d ros2-gazebo-tugbot bash -c 'ros2 run ros_ign_bridge parameter_bridge /world/world_demo/model/tugbot/link/camera_front/sensor/color/image@sensor_msgs/msg/Image@ignition.msgs.Image'
+      # - docker exec -d ros2-gazebo-tugbot bash -c 'ros2 run rqt_image_view rqt_image_view'
+    # artifacts:
+    #   name: "$CI_PIPELINE_IID"
+    #   paths:
+    #     -  gitlab-test.txt
+    #   expire_in: 1 week
