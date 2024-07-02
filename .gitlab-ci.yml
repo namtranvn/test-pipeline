@@ -13,6 +13,9 @@ build_image1:
   script:
     - docker build . --file Dockerfile1 --tag ros2-gui:$CI_PIPELINE_IID
     - echo "$CI_PIPELINE_IID $CI_PIPELINE_ID Build Docker Image1" >> gitlab-test.txt
+  only:
+    - develop
+    - main
   artifacts:
     name: "$CI_PIPELINE_IID"
     paths:
@@ -29,6 +32,9 @@ build_image2:
   script:
     - docker build . --file Dockerfile2 --tag ros2-gui:$CI_PIPELINE_IID
     - echo "$CI_PIPELINE_IID $CI_PIPELINE_ID Build Docker Image2" >> gitlab-test.txt
+  only:
+    - develop
+    - main
   artifacts:
     name: "$CI_PIPELINE_IID"
     paths:
@@ -47,6 +53,9 @@ build_image3:
   script:
     - docker build . --file Dockerfile3 --tag ros2-gui:$CI_PIPELINE_IID
     - echo "$CI_PIPELINE_IID $CI_PIPELINE_ID Build Docker Image3" >> gitlab-test.txt
+  only:
+    - develop
+    - main
   artifacts:
     name: "$CI_PIPELINE_IID"
     paths:
@@ -61,6 +70,9 @@ push_image1:
     - docker tag ros2-gui:$CI_PIPELINE_IID hoainamtran204/ros2-gui:$CI_PIPELINE_IID
     - docker push hoainamtran204/ros2-gui:$CI_PIPELINE_IID
     - echo "$CI_PIPELINE_IID $CI_PIPELINE_ID Push Docker Image" >> gitlab-test.txt
+  only:
+    - develop
+    - main
   artifacts:
     name: "$CI_PIPELINE_IID"
     paths:
@@ -75,6 +87,9 @@ push_image2:
     - docker tag ros2-gui:$CI_PIPELINE_IID hoainamtran204/ros2-gui:$CI_PIPELINE_IID
     - docker push hoainamtran204/ros2-gui:$CI_PIPELINE_IID
     - echo "$CI_PIPELINE_IID $CI_PIPELINE_ID Push Docker Image" >> gitlab-test.txt
+  only:
+    - develop
+    - main
   artifacts:
     name: "$CI_PIPELINE_IID"
     paths:
@@ -91,6 +106,9 @@ push_image3:
     - docker tag ros2-gui:$CI_PIPELINE_IID hoainamtran204/ros2-gui:$CI_PIPELINE_IID
     - docker push hoainamtran204/ros2-gui:$CI_PIPELINE_IID
     - echo "$CI_PIPELINE_IID $CI_PIPELINE_ID Push Docker Image" >> gitlab-test.txt
+  only:
+    - develop
+    - main
   artifacts:
     name: "$CI_PIPELINE_IID"
     paths:
@@ -105,6 +123,9 @@ deploy_job:
     - docker pull hoainamtran204/ros2-gui:$CI_PIPELINE_IID
     - docker run -d -it hoainamtran204/ros2-gui:$CI_PIPELINE_IID /bin/bash
     - echo "$CI_PIPELINE_IID $CI_PIPELINE_ID Deploy Docker Image" >> gitlab-test.txt
+  only:
+    - develop
+    - main
   artifacts:
     name: "$CI_PIPELINE_IID"
     paths:
